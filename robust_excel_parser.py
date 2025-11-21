@@ -272,6 +272,64 @@ class RobustExcelParser:
         
         return df
     
+    def detect_and_transpose(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, bool]:
+        """
+        Detect if data is transposed (branches as rows instead of columns) and fix it
+        
+        Args:
+            df: DataFrame to check
+            
+        Returns:
+            Tuple of (corrected_df, was_transposed)
+        """
+        self.log("Checking if data needs transposition...")
+        
+        # Check first column for branch names
+        if len(df.columns) > 0:
+            first_col = df.iloc[:, 0].astype(str).str.strip()
+            
+            # Count how many branch names appear in first column
+            branch_matches_in_rows = 0
+            for branch in self.expected_branches:
+                for val in first_col:
+                    if self.fuzzy_match(val, branch) >= self.fuzzy_threshold:
+                        branch_matches_in_rows += 1
+                        break
+            
+            # Count how many branch names appear in column headers
+            branch_matches_in_cols = 0
+            for branch in self.expected_branches:
+                for col in df.columns:
+                    if self.fuzzy_match(str(col), branch) >= self.fuzzy_threshold:
+                        branch_matches_in_cols += 1
+                        break
+            
+            self.log(f"Branch matches: {branch_matches_in_rows} in rows, {branch_matches_in_cols} in columns")
+            
+            # If more branches found in rows than columns, transpose is needed
+            if branch_matches_in_rows > branch_matches_in_cols and branch_matches_in_rows >= 2:
+                self.log("🔄 Data is transposed! Auto-transposing to correct format...")
+                
+                # Save first column as header
+                new_header = df.iloc[:, 0].tolist()
+                
+                # Transpose the data (excluding first column)
+                df_transposed = df.iloc[:, 1:].T
+                
+                # Set the row names as column headers
+                df_transposed.columns = new_header
+                
+                # Reset index to create Period column
+                df_transposed = df_transposed.reset_index()
+                df_transposed.columns = ['Period'] + new_header
+                
+                self.log(f"✅ Transposed: {len(df_transposed)} rows × {len(df_transposed.columns)} columns")
+                
+                return df_transposed, True
+        
+        self.log("No transposition needed - data is in correct format")
+        return df, False
+    
     def standardize_column_names(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Standardize column names using fuzzy matching
@@ -384,24 +442,27 @@ class RobustExcelParser:
             headers = df_raw.iloc[header_row].fillna('Unnamed')
             df_section.columns = headers
         
-        # Step 5: Remove total rows
+        # Step 5: Detect and fix transposition
+        df_section, was_transposed = self.detect_and_transpose(df_section)
+        
+        # Step 6: Remove total rows
         df_section = self.remove_total_rows(df_section)
         
-        # Step 6: Remove comment rows
+        # Step 7: Remove comment rows
         df_section = self.remove_comment_rows(df_section)
         
-        # Step 7: Standardize column names with fuzzy matching
+        # Step 8: Standardize column names with fuzzy matching
         df_section = self.standardize_column_names(df_section)
         
-        # Step 8: Clean numeric columns
+        # Step 9: Clean numeric columns
         for col in df_section.columns:
             if col not in ['Period', 'Month', 'Week', 'Date']:
                 df_section[col] = df_section[col].apply(self.clean_numeric_value)
         
-        # Step 9: Remove rows with all NaN values
+        # Step 10: Remove rows with all NaN values
         df_section = df_section.dropna(how='all')
         
-        # Step 10: Reset index
+        # Step 11: Reset index
         df_section = df_section.reset_index(drop=True)
         
         self.log(f"Revenue section parsed: {len(df_section)} rows × {len(df_section.columns)} columns")
@@ -447,6 +508,9 @@ class RobustExcelParser:
         if header_row < start_row:
             headers = df_raw.iloc[header_row].fillna('Unnamed')
             df_section.columns = headers
+        
+        # Detect and fix transposition
+        df_section, was_transposed = self.detect_and_transpose(df_section)
         
         df_section = self.remove_total_rows(df_section)
         df_section = self.remove_comment_rows(df_section)
@@ -502,6 +566,9 @@ class RobustExcelParser:
         if header_row < start_row:
             headers = df_raw.iloc[header_row].fillna('Unnamed')
             df_section.columns = headers
+        
+        # Detect and fix transposition
+        df_section, was_transposed = self.detect_and_transpose(df_section)
         
         df_section = self.remove_total_rows(df_section)
         df_section = self.remove_comment_rows(df_section)
