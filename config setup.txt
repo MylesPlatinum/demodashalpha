@@ -1,0 +1,31 @@
+Step 1: Copy the Template
+bashcp config.yaml config_newclient.yaml
+Step 2: Update Client Information
+yamlclient:
+  name: "Acme Retail Ltd"  # ← Change company name
+  id: "acme_retail"        # ← Change to lowercase_underscore
+  contact_email: "support@acmeretail.com"
+Step 3: Update Dashboard Branding
+yamldashboard:
+  title: "Acme Retail Dashboard"
+  subtitle: "Store Performance Analytics"
+  password: "AcmeRetail2024"  # ← Change password!
+Step 4: Change Branch Names
+yamlbranches:
+  - "Store Oxford Street"    # ← Replace with actual branch/store names
+  - "Store Birmingham"
+  - "Store Manchester"
+  - "Store Leeds"
+Step 5: Adjust Excel Row Numbers
+Open their Excel file and count rows manually:
+yamlrevenue_start_row: 3   # ← Row where revenue DATA starts (0-indexed)
+revenue_end_row: 18    # ← Last row of revenue data
+hours_start_row: 22    # ← Row where hours start (if exists)
+hours_end_row: 37      # ← Last hours row
+Pro tip: If headers are in row 4 of Excel, data starts row 5 → use revenue_start_row: 4
+Step 6: Update Colors (Optional)
+yamlbranding:
+  primary_color: "#FF6B35"    # ← Company brand color
+  secondary_color: "#004E89"
+Step 7: Test It
+bashstreamlit run app_with_robust_parser.py
