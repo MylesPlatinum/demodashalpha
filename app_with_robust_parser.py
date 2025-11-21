@@ -224,6 +224,14 @@ def check_password(config):
         # Show company branding
         client_name = config.get('client', {}).get('name', 'Analytics Dashboard')
         subtitle = config.get('dashboard', {}).get('subtitle', 'Business Intelligence')
+        logo_file = config.get('branding', {}).get('logo_file', '')
+        
+        # Display logo if available
+        if logo_file and Path(logo_file).exists():
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.image(logo_file, use_container_width=True)
+                st.markdown("<br>", unsafe_allow_html=True)
         
         st.markdown(f"""
         <div style='text-align: center; padding: 2rem;'>
@@ -502,9 +510,20 @@ def main():
     # Dashboard header
     client_name = config.get('client', {}).get('name', 'Analytics Dashboard')
     subtitle = config.get('dashboard', {}).get('subtitle', 'Business Intelligence')
+    logo_file = config.get('branding', {}).get('logo_file', '')
     
-    st.title(f"📊 {client_name}")
-    st.markdown(f"*{subtitle}*")
+    # Display logo and title
+    if logo_file and Path(logo_file).exists():
+        col1, col2 = st.columns([1, 5])
+        with col1:
+            st.image(logo_file, width=100)
+        with col2:
+            st.title(f"📊 {client_name}")
+            st.markdown(f"*{subtitle}*")
+    else:
+        st.title(f"📊 {client_name}")
+        st.markdown(f"*{subtitle}*")
+    
     st.markdown("---")
     
     # Load data with robust parser

@@ -36,8 +36,8 @@ branding:
 # === DATA SOURCES ===
 data:
   # File patterns for auto-detection
-  revenue_file_pattern: "*Revenue*.xlsx"
-  costs_file_pattern: "*Costs*.xlsx"
+  revenue_file_pattern: "*revenue*.xlsx"
+  costs_file_pattern: "*costs*.xlsx"
   
   # Excel sheet names (usually "Sheet1")
   revenue_sheet: "Sheet1"
