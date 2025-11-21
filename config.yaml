@@ -1,0 +1,91 @@
+# ========================================
+# DASHBOARD CONFIGURATION FILE
+# ========================================
+
+# === CLIENT INFORMATION ===
+client:
+  name: "Tesco"
+  id: "demo_company"
+  contact_email: "support@democompany.com"
+
+# === DASHBOARD SETTINGS ===
+dashboard:
+  title: "Business Analytics Dashboard"
+  subtitle: "Financial & Operational Intelligence"
+  password: "Tesco2025"  # ⚠️ CHANGE THIS PASSWORD!
+
+# === SUBSCRIPTION & FEATURES ===
+subscription:
+  tier: "Professional"  # Options: Basic, Professional, Enterprise
+  expiry_date: "2025-12-31"
+
+features:
+  debug_mode: false  # Set to true to see detailed parsing logs
+  pdf_export: true
+  care_type_breakdown: false
+  advanced_analytics: true
+
+# === BRANDING ===
+branding:
+  logo_file: "logo.png"  # Optional: Path to logo file
+  primary_color: "#3498db"      # Main brand color (blue)
+  secondary_color: "#2ecc71"    # Secondary color (green)
+  warning_color: "#e74c3c"      # For costs/warnings (red)
+  success_color: "#27ae60"      # For profits/success (dark green)
+
+# === DATA SOURCES ===
+data:
+  # File patterns for auto-detection
+  revenue_file_pattern: "*Revenue*.xlsx"
+  costs_file_pattern: "*Costs*.xlsx"
+  
+  # Excel sheet names (usually "Sheet1")
+  revenue_sheet: "Sheet1"
+  costs_sheet: "Sheet1"
+  
+  # ⚠️ ROW NUMBERS ARE OPTIONAL - Parser auto-detects!
+  # Only add these if auto-detection fails:
+  # revenue_start_row: 3
+  # revenue_end_row: 18
+  # hours_start_row: 22
+  # hours_end_row: 37
+  
+  # ⚠️ CRITICAL: Branch names must match your Excel columns exactly!
+  branches:
+    - "London"
+    - "Manchester"
+    - "Birmingham"
+    - "Leeds"
+    - "Liverpool"
+
+# === CARE TYPE CATEGORIES (Optional) ===
+care_types:
+  enabled: false
+  categories:
+    - "Private"
+    - "Local Authority"
+    - "Live-In"
+
+# === COMPANY VALUES (Optional - shown on login page) ===
+company_values:
+  show_on_login: false
+  values:
+    - "Excellence"
+    - "Integrity"
+    - "Innovation"
+
+# === ANALYTICS SETTINGS ===
+analytics:
+  default_periods: 12
+  margin_warning_threshold: 10  # Show warning if margin below this %
+  margin_good_threshold: 20     # Show success if margin above this %
+  
+# === CHART DEFAULTS ===
+charts:
+  default_height: 450
+  color_schemes:
+    - "Viridis"
+    - "Blues"
+    - "Reds"
+    - "Greens"
+    - "Rainbow"
